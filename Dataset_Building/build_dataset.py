@@ -15,7 +15,7 @@ name = "rT1.nii" #name of the images in the folders
 
 #Paths definition
 p_NAS = "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/"
-p_dat = p_NAS + "Data/Raw" #Data location
+p_dat = p_NAS + "Data/Raw/" #Data location
 p_gt = p_NAS + "Data/Ground_Truths/"#path to ground truths
 p_csv = p_NAS + "Correspondancies_ElectrodeDetection_Dataset.csv" #CSV file with correspondencies between subject Ids and nnUNet Ids
 p_Tr = p_NAS + "nnUNet/nnUNet_raw/Dataset005_T1_R/imagesTr/" #path to the train set
@@ -23,7 +23,7 @@ p_Ts = p_NAS + "nnUNet/nnUNet_raw/Dataset005_T1_R/imagesTs/" #path to the test s
 p_lTr = p_NAS + "nnUNet/nnUNet_raw/Dataset005_T1_R/labelsTr/" #path to the ground truths associated with the train set images
 
 #Reading the CSV
-corr = pd.read_csv(p_csv)
+corr = pd.read_csv(p_csv)   
 
 #Sorting, copying, and compressing the files into the right folders
 for index,row in corr.iterrows():
@@ -37,17 +37,23 @@ for index,row in corr.iterrows():
     s_dir = p_dat + row['Folder'] + "/" + row['Name'] + "/" + row['Quality'] + "/" + name #Source directory (name of the file)
     gt_dir = p_gt + row['Folder'] + "/" + row['Name'] + "/" + row['Quality'] + "/gt_seg.nii" #Ground truth directory
     
+    # print("chmod s_dir : " + (str)(os.stat(s_dir).st_mode))
+
     if(row['Set'] == "train"):
         
         t_dir = p_Tr + f #Target directory
         l_dir = p_lTr + f_gt #Target directory for the ground truth (label)
-        
+
         #Debug
-        print(os.path.isfile(s_dir), " | ",os.path.isfile(gt_dir))
-        print("Source Directory : ", s_dir, " | Target Directory : ", t_dir, " | Ground Truth Directory : ", gt_dir, " | Label Directory : ", l_dir)
-        
+        print(os.path.isfile(s_dir), " | ", os.path.isfile(t_dir)," | ",os.path.isfile(gt_dir))
+        print("Source Directory : ", s_dir, "\nTarget Directory : ", t_dir, "\nGround Truth Directory : ", gt_dir, "\nLabel Directory : ", l_dir)
+
+        print("debug check : " + (str)(t_dir == "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/nnUNet/nnUNet_raw/Dataset005_T1_R/imagesTr/Hemisfer_001_0000.nii"))
+
+
         #Copying the files then compressing them, using gzip, for both files
-        shutil.copy2(s_dir,t_dir) #copy2 keeps de metadata
+
+        shutil.copy2(s_dir, t_dir) #copy2 keeps the metadata
         
         with open(t_dir, 'rb') as f_in:
             with gzip.open(t_dir + ".gz", 'wb') as f_out:
@@ -66,7 +72,7 @@ for index,row in corr.iterrows():
         
         #Debug
         print(os.path.isfile(s_dir))
-        print("Source Directory : ", s_dir, " | Target Directory : ", t_dir)
+        print("Source Directory : ", s_dir, "\nTarget Directory : ", t_dir)
         
         #Copying the files then compressing them, using gzip, for both files
         shutil.copy2(s_dir, t_dir)

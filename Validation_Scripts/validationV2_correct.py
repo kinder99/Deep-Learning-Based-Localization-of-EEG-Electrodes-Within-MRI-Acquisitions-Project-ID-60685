@@ -136,9 +136,6 @@ for coord1 in range(0, len(corresponding_gTruth_centers)) :
                 nbDoubles = nbDoubles + 1
                 print('Double : {0} et {1}'.format(predict_centers[coord1], predict_centers[others]))
 
-
-
-
 meanPE = sumTotal / nbTotal
 stdPE = np.std(position_error)
 true_positives = predict_nbObjects - nbOutliers
@@ -153,7 +150,6 @@ print('Double(s) : {0}'.format(nbDoubles))
 print('PPV : {0} %'.format(ppv))
 print('True Positives : {0}'.format(true_positives))
 print('Mislabeled : {0} -> {1}'.format(nbMislabeled, mislabeled))
-
 
 with open(s, 'w') as f:
     for coord in position_error_label :
