@@ -9,16 +9,15 @@ import gzip #Creating .nii.gz files
 mod = "EDT1" #name of the dataset
 e = "Hemisfer"#Name of the experiment
 p = e + "_" #Prefix of the file name
-s = "_0000.nii" #Suffix of the file name
+s = "_0000.nii" #Suffix of the file namepen
 s_gt = ".nii" #Suffix of the ground truth file
 name = "rT1.nii" #name of the images in the folders
 
-#Paths definition 
-# TODO : change the paths to allow current configuration to work
-p_NAS = "/home/mgeorgea/NAS_EMPENN/share/users/mgeorgea/Electrode_Detection/"
-p_dat = p_NAS + "Raw Data/" #Data location
-p_gt = p_NAS + "Raw Data/GroundTruth/"#path to ground truths
-p_csv = p_NAS + "nnUNet/nnUNet_raw/Correspondancies_ElectrodeDetection_Dataset.csv"#CSV file with correspondencies between subject Ids and nnUNet Ids
+#Paths definition
+p_NAS = "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/"
+p_dat = p_NAS + "Data/Raw" #Data location
+p_gt = p_NAS + "Data/Ground_Truths/"#path to ground truths
+p_csv = p_NAS + "Correspondancies_ElectrodeDetection_Dataset.csv" #CSV file with correspondencies between subject Ids and nnUNet Ids
 p_Tr = p_NAS + "nnUNet/nnUNet_raw/Dataset005_T1_R/imagesTr/" #path to the train set
 p_Ts = p_NAS + "nnUNet/nnUNet_raw/Dataset005_T1_R/imagesTs/" #path to the test set
 p_lTr = p_NAS + "nnUNet/nnUNet_raw/Dataset005_T1_R/labelsTr/" #path to the ground truths associated with the train set images
@@ -29,14 +28,14 @@ corr = pd.read_csv(p_csv)
 #Sorting, copying, and compressing the files into the right folders
 for index,row in corr.iterrows():
     
-    id = str(row['Id'])
-    id = id.rjust(3,'0')
+    id = str(row['Id']) #get id from current row 
+    id = id.rjust(3,'0') #add padding with character 0 to the left of id, until id is of length 3
     
-    f = p + id + s
-    f_gt = p + id + s_gt
+    f = p + id + s #set name according to nomenclature : Hemisfer_id_0000.nii
+    f_gt = p + id + s_gt #set name of segmented image : Hemisfer_id.nii
     
     s_dir = p_dat + row['Folder'] + "/" + row['Name'] + "/" + row['Quality'] + "/" + name #Source directory (name of the file)
-    gt_dir = p_gt + row['Folder'] + "/" + row['Name'] + "/" + row['Quality'] + "/gt_seg.nii"#Ground truth directory
+    gt_dir = p_gt + row['Folder'] + "/" + row['Name'] + "/" + row['Quality'] + "/gt_seg.nii" #Ground truth directory
     
     if(row['Set'] == "train"):
         
