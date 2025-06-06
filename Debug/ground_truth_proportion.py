@@ -1,0 +1,21 @@
+import nibabel as nib
+import numpy as np
+import pandas as pd
+import tqdm
+
+nas_path = "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/"
+gt_path = nas_path + "nnUNet/nnUNet_preprocessed/Dataset005_T1_R/gt_segmentations/"
+csv_path = nas_path + "Correspondancies_ElectrodeDetection_Dataset.csv"
+
+corr = pd.read_csv(csv_path)
+
+# for i in tqdm.tgrange(1:):
+
+for index, row in tqdm.tqdm(corr.iterrows()):
+    id = str(row['Id']) #get id from current row 
+    id = id.rjust(3,'0') #add padding with character 0 to the left of id, until id is of length 3
+
+    if(row['Set'] == "train"):
+        labels = nib.load(gt_path + "Hemisfer_" + id + ".nii.gz").get_fdata()
+        proportion = (np.count_nonzero(labels) * 100) / labels.size
+        print("Proportion of labeled pixels for Hemisfer_"+id+".nii.gz : ",proportion)
