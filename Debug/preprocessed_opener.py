@@ -13,4 +13,8 @@ def open_preprocessed(path):
 data = open_preprocessed(path_preprocessed + "Hemisfer_001.pkl")
 classes = data['class_locations']
 
-print(classes)
+# for key in classes:
+#     print(classes[key])
+
+print(classes[1].shape)
+
