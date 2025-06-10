@@ -4,6 +4,13 @@ import os #System files manipulations
 import shutil #copying files
 import pandas as pd #reading the csv correspondancies 
 import gzip #Creating .nii.gz files
+import argparse
+
+parser = argparse.ArgumentParser("check for mode", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+parser.add_argument("mode", type=bool, help="whether petra mode is enabled or not")
+
+args = vars(parser.parse_args())
 
 #Names
 mod = "EDT1" #name of the dataset
@@ -13,14 +20,17 @@ s = "_0000.nii" #Suffix of the file namepen
 s_gt = ".nii" #Suffix of the ground truth file
 name = "rT1.nii" #name of the images in the folders
 
+mode_petra = args['mode']
+
 #Paths definition
 p_NAS = "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/"
 p_dat = p_NAS + "Data/Raw/" #Data location
 p_gt = p_NAS + "Data/Ground_Truths/"#path to ground truths
 p_csv = p_NAS + "Correspondancies_ElectrodeDetection_Dataset.csv" #CSV file with correspondencies between subject Ids and nnUNet Ids
-p_Tr = p_NAS + "nnUNet/nnUNet_raw/Dataset005_T1_R/imagesTr/" #path to the train set
-p_Ts = p_NAS + "nnUNet/nnUNet_raw/Dataset005_T1_R/imagesTs/" #path to the test set
-p_lTr = p_NAS + "nnUNet/nnUNet_raw/Dataset005_T1_R/labelsTr/" #path to the ground truths associated with the train set images
+p_dataset = "nnUNet/nnUNet_raw/Dataset000_Petra_1class/"
+p_Tr = p_NAS + p_dataset + "imagesTr/" #path to the train set
+p_Ts = p_NAS + p_dataset + "imagesTs/" #path to the test set
+p_lTr = p_NAS + p_dataset + "labelsTr/" #path to the ground truths associated with the train set images
 
 #Reading the CSV
 corr = pd.read_csv(p_csv)   
@@ -33,9 +43,21 @@ for index,row in corr.iterrows():
     
     f = p + id + s #set name according to nomenclature : Hemisfer_id_0000.nii
     f_gt = p + id + s_gt #set name of segmented image : Hemisfer_id.nii
+
+    if(mode_petra):
+        if(row["Quality"] == "30K"):
+            name = "PETRA_30K.nii"
+        if(row["Quality"] == "30Kbis"):
+            name = "PETRA_30K.nii"
+        if(row["Quality"] == "60K"):
+            name = "PETRA_60K.nii"
+        if(row["Quality"] == "60Kbis"):
+            name = "PETRA_60K.nii"
+        if(row["Quality"] == "60Kbisbis"):
+            name = "PETRA_60K.nii"
     
     s_dir = p_dat + row['Folder'] + "/" + row['Name'] + "/" + row['Quality'] + "/" + name #Source directory (name of the file)
-    gt_dir = p_gt + row['Folder'] + "/" + row['Name'] + "/" + row['Quality'] + "/gt_seg.nii" #Ground truth directory
+    gt_dir = p_gt + row['Folder'] + "/" + row['Name'] + "/" + row['Quality'] + "/gt.nii" #Ground truth directory
     
     # print("chmod s_dir : " + (str)(os.stat(s_dir).st_mode))
 
@@ -47,9 +69,6 @@ for index,row in corr.iterrows():
         #Debug
         print(os.path.isfile(s_dir), " | ", os.path.isfile(t_dir)," | ",os.path.isfile(gt_dir))
         print("Source Directory : ", s_dir, "\nTarget Directory : ", t_dir, "\nGround Truth Directory : ", gt_dir, "\nLabel Directory : ", l_dir)
-
-        print("debug check : " + (str)(t_dir == "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/nnUNet/nnUNet_raw/Dataset005_T1_R/imagesTr/Hemisfer_001_0000.nii"))
-
 
         #Copying the files then compressing them, using gzip, for both files
 
