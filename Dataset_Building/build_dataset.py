@@ -13,10 +13,12 @@ import pandas as pd # Reading the csv correspondancies
 import gzip # Creating .nii.gz files
 import argparse # Command line argument handling
 
-# Receive command line argument
+# Receive command line arguments
 parser = argparse.ArgumentParser("check for mode", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("mode", type=bool, help="whether petra mode is enabled or not")
+parser.add_argument("path",help="Path to dataset repository", type=str)
+parser.add_argument("mode", help="Whether petra mode is enabled or not (1 = True, 0 = False)", type=int)
 args = vars(parser.parse_args())
+p_dataset = args['path']
 mode_petra = args['mode']
 
 # Names
@@ -32,7 +34,6 @@ p_NAS = "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/"
 p_dat = p_NAS + "Data/Raw/" # Data location
 p_gt = p_NAS + "Data/Ground_Truths/"# Path to ground truths
 p_csv = p_NAS + "Correspondancies_ElectrodeDetection_Dataset.csv" # CSV file with correspondencies between subject Ids and nnUNet Ids
-p_dataset = "nnUNet/nnUNet_raw/Dataset000_Petra_1class/" # Path to the nnUNet dataset
 p_Tr = p_NAS + p_dataset + "imagesTr/" # Path to the train set
 p_Ts = p_NAS + p_dataset + "imagesTs/" # Path to the test set
 p_lTr = p_NAS + p_dataset + "labelsTr/" # Path to the ground truths associated with the train set images
