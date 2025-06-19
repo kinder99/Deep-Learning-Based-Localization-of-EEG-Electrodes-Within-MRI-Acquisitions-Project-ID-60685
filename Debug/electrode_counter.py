@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 import tqdm
 import argparse
+import SimpleITK as sitk
 
 parser = argparse.ArgumentParser("check for mode", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("mode", help="Whether train mode is enabled or not (1 = True, 0 = False)", type=int)
@@ -28,8 +29,6 @@ csv_path = nas_path + "Correspondancies_ElectrodeDetection_Dataset.csv"
 # Read the CSV
 corr = pd.read_csv(csv_path)
 
-gt_electrode_weight = 0.0243988037109375/65
-
 # Iterate for all rows in the CSV
 for index, row in tqdm.tqdm(corr.iterrows()):
     id = str(row['Id']) # Get id from current row 
@@ -40,11 +39,19 @@ for index, row in tqdm.tqdm(corr.iterrows()):
             labels = nib.load(gt_path + "Hemisfer_" + id + ".nii.gz").get_fdata()
             proportion = (np.count_nonzero(labels) * 100) / labels.size # Compute percentage of non zero voxels in volume
             print("Proportion of labeled pixels for Hemisfer_"+id+".nii.gz : ",proportion)
-            print("Number of found electrodes for Hemisfer_"+id+".nii.gz : ",proportion/gt_electrode_weight)
+
+            gt_image = sitk.ReadImage(gt_path + "Hemisfer_" + id + ".nii.gz", sitk.sitkUInt8) # Load ground truth volume with SimpleITK
+            gt_components = sitk.ConnectedComponentImageFilter() # Initialize default connected components filter
+            gt_labels = gt_components.Execute(gt_image) # Filter the ground truth volume to get the number of connected components (electrodes)
+            print("Number of found electrodes according to SimpleITK : " + str(gt_components.GetObjectCount()))
 
     if(mode == 1):
         if(row['Set'] == "test"): # Check if image belongs to train set or not; test images have no ground truth
             labels = nib.load(inf_path + "Hemisfer_" + id + ".nii.gz").get_fdata()
             proportion = (np.count_nonzero(labels) * 100) / labels.size # Compute percentage of non zero voxels in volume
             print("Proportion of labeled pixels for Hemisfer_"+id+".nii.gz : ",proportion)
-            print("Number of found electrodes for Hemisfer_"+id+".nii.gz : ",proportion/gt_electrode_weight)
+
+            predicted_image = sitk.ReadImage(inf_path + "Hemisfer_" + id + ".nii.gz", sitk.sitkUInt8) # Load predicted volume with SimpleITK
+            predicted_components = sitk.ConnectedComponentImageFilter() # Initialize default connected components filter
+            predicted_labels = predicted_components.Execute(predicted_image) # Filter the predicted volume to get the connected components (eletrodes) 
+            print("Number of found electrodes according to SimpleITK : " + str(predicted_components.GetObjectCount()))
