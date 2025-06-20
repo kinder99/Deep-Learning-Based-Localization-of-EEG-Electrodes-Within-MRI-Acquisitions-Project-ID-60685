@@ -1,7 +1,8 @@
 #########################################################################################################
 ### ground_truth_proportion.py
 ###
-### Script used to compute the total percentage of voxels making up the electrodes in each ground truth.
+### Script used to compute the total percentage of voxels making up the electrodes in given volume.
+### Also able to count the number of individual electrodes in a volume.
 ###
 ### Author : Kieran Le Mouël
 ### Date : 7/06/2025
@@ -15,6 +16,7 @@ import tqdm
 import argparse
 import SimpleITK as sitk
 
+# Command line argument handling
 parser = argparse.ArgumentParser("check for mode", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("mode", help="Whether train mode is enabled or not (1 = True, 0 = False)", type=int)
 args = vars(parser.parse_args())

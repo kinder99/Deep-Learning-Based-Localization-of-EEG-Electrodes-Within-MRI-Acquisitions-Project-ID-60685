@@ -70,7 +70,7 @@ for index, row in tqdm.tqdm(corr.iterrows()):
                     if(img_data[i][j][k] == 32767):
                         c += 1
                         img_data[i][j][k] = 1 # Replace erronous label with correct value
-        print("Current id : "+ id +", Number of pixels modified : ", c)
+        print("Current id : "+ id +", Number of voxels modified : ", c)
 
         # Define and save replacement NIfTI volume
         temp_img = nib.Nifti1Image(img_data, affine=img_affine, header=img_header)
