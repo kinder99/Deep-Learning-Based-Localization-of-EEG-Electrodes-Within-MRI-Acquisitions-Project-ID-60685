@@ -29,7 +29,6 @@ suffix = ".nii.gz"
 # Read the CSV
 corr = pd.read_csv(path_CSV)
 
-
 def write_metadata(bin_image, lab_image):
     """
     Function used to read image metadata and write it into .txt files.
@@ -117,6 +116,10 @@ for index, row in corr.iterrows():
         # Define source paths for the ground truths files
         source_path_binary = path_binary_gt + prefix + id + suffix
         source_path_labels = path_labels_gt + prefix + id + suffix
+
+        # Check if source files exist, if it doesn't, skip id entirely to avoid errors
+        if os.path.isfile(source_path_binary) == False or os.path.isfile(source_path_labels) == False:
+            continue
 
         # Load ground truth images using SimpleITK
         bin_image = sitk.ReadImage(source_path_binary, sitk.sitkUInt8)
