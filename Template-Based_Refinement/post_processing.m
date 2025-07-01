@@ -482,7 +482,7 @@ dlmwrite(scoord,pt_detec2)
                         x, y, z, 1];
                     tform_init = affine3d(M);
                     [tform,pt_recal_ptcloud,rmse] = pcregistericp(pt_templ_ptcloud,pt_detec_ptcloud,'MaxIterations',100,'InitialTransform',tform_init);
-                    if (rmse < error)
+                     if (rmse < error)
                         error = rmse;
                         pt_templ_label = pt_recal_ptcloud.Location; 
                         best_tform = tform;

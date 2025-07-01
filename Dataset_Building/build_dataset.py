@@ -1,11 +1,11 @@
-#########################################################################################################
-### build_dataset.py
-###
-### Builds a nnUNet dataset following the csv file of the subjects correspondancies of HEMISFER dataset
-###
-### Authors: Kieran Le Mouël, Mathys Georgeais
-### Date: 04/06/2025
-#########################################################################################################
+###########################################################################################################
+### build_dataset.py                                                                                    ###
+###                                                                                                     ###
+### Builds a nnUNet dataset following the csv file of the subjects correspondancies of HEMISFER dataset ###
+###                                                                                                     ###
+### Authors: Kieran Le Mouël, Mathys Georgeais                                                          ###
+### Date: 04/06/2025                                                                                    ###
+###########################################################################################################
 
 import os #System files manipulations
 import shutil # Copying files
