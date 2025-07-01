@@ -3,43 +3,52 @@
 ###
 ### Compute the center position of connected components.
 ###
-### Author : Caroline Pinte
-### Date : 27/08/2020
+### Author: Caroline Pinte, Kieran Le Mouël
+### Date: 27/08/2020, Modified: 30/06/2025 
 #########################################################################################################
-
 
 # Load the required modules
 import numpy as np
 import SimpleITK as sitk
 import math
+import pandas as pd
 
 # Read the Prediction image
-# TODO : change path
-predict_image = sitk.ReadImage('c:/Users/User/Desktop/Stage_Caroline/TED/Results_Predictions/Brut/Pred_PETRA_FEWDATA2/Hemisfer_004.nii.gz')
+nas_path = "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/"
+gt_path = nas_path + "nnUNet/nnUNet_raw/Dataset005_Petra_65/labelsTr/"
+inf_path = nas_path + "inference_output_petra_65class/"
+csv_path = nas_path + "Correspondancies_ElectrodeDetection_Dataset.csv"
+out_path = nas_path + "post_processing/petra_65/coords_output/"
 
+corr = pd.read_csv(csv_path)
 
-# Compute the connected components 
-predict_components = sitk.ConnectedComponentImageFilter()
-predict_label = predict_components.Execute(predict_image)
-predict_nbObjects = predict_components.GetObjectCount()
-print('Prediction : Number of connected components = {0}'.format(predict_nbObjects))
+for index, row in corr.iterrows():
+    id = str(row['Id'])
+    id = id.rjust(3, '0')
 
-# Compute the image statistics and find the center of each sphere 
-predict_stats = sitk.LabelStatisticsImageFilter()
-predict_stats.Execute(predict_image, predict_label)
+    if(row['Set'] == "test"):
+        predict_image = sitk.ReadImage(inf_path + "Hemisfer_" + id + ".nii.gz")
 
-predict_centers = []
-for i in range(1,predict_nbObjects+1) :
-    bb = predict_stats.GetBoundingBox(i)
-    x = math.ceil((bb[0] + bb[1]+1) / 2)
-    y = math.ceil((bb[2] + bb[3]+1) / 2)
-    z = math.ceil((bb[4] + bb[5]+1) / 2)
-    center = (x,y,z)
-    predict_centers.append(center)
+        # Compute the connected components 
+        predict_components = sitk.ConnectedComponentImageFilter()
+        predict_label = predict_components.Execute(predict_image)
+        predict_nbObjects = predict_components.GetObjectCount()
+        print('Prediction : Number of connected components = {0}'.format(predict_nbObjects))
 
-# Save
-# TODO : change path
-with open('c:/Users/User/Desktop/Stage_Caroline/TED/Results_Predictions/Brut/Pred_PETRA_FEWDATA2/Hemisfer_004_coord.txt', 'w') as f:
-    for coord in predict_centers :
-        f.write('{0} {1} {2}\n'.format(coord[0],coord[1],coord[2]))
+        # Compute the image statistics and find the center of each sphere 
+        predict_stats = sitk.LabelStatisticsImageFilter()
+        predict_stats.Execute(predict_image, predict_label)
 
+        predict_centers = []
+        for i in range(1,predict_nbObjects+1) :
+            bb = predict_stats.GetBoundingBox(i)
+            x = math.ceil((bb[0] + bb[1]+1) / 2)
+            y = math.ceil((bb[2] + bb[3]+1) / 2)
+            z = math.ceil((bb[4] + bb[5]+1) / 2)
+            center = (x,y,z)
+            predict_centers.append(center)
+
+        # Save
+        with open(out_path + "Hemisfer_" + id + "_coords.txt", 'a') as f:
+            for coord in predict_centers :
+                f.write('{0} {1} {2}\n'.format(coord[0],coord[1],coord[2]))

@@ -3,8 +3,8 @@
 ###
 ### Builds a nnUNet dataset following the csv file of the subjects correspondancies of HEMISFER dataset
 ###
-### Authors : Kieran Le Mouël, Mathys Georgeais
-### Date : 04/06/2025
+### Authors: Kieran Le Mouël, Mathys Georgeais
+### Date: 04/06/2025
 #########################################################################################################
 
 import os #System files manipulations
@@ -64,7 +64,7 @@ for index,row in corr.iterrows():
             name = "PETRA_60K.nii"
     
     s_dir = p_dat + row['Folder'] + "/" + row['Name'] + "/" + row['Quality'] + "/" + name # Source directory (name of the file)
-    gt_dir = p_gt + row['Folder'] + "/" + row['Name'] + "/" + row['Quality'] + "/gt.nii" # Ground truth directory
+    gt_dir = p_gt + row['Folder'] + "/" + row['Name'] + "/" + row['Quality'] + "/gt_seg.nii" # Ground truth directory
 
     # Fill train repository of nnUNet dataset
     if(row['Set'] == "train"): 

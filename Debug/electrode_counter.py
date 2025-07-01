@@ -4,8 +4,8 @@
 ### Script used to compute the total percentage of voxels making up the electrodes in given volume.
 ### Also able to count the number of individual electrodes in a volume.
 ###
-### Author : Kieran Le Mouël
-### Date : 7/06/2025
+### Author: Kieran Le Mouël
+### Date: 7/06/2025
 #########################################################################################################
 
 # Various imports
@@ -18,14 +18,16 @@ import SimpleITK as sitk
 
 # Command line argument handling
 parser = argparse.ArgumentParser("check for mode", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument("path", help="path to repository of images to work on, starts from root internship repo", type=str)
 parser.add_argument("mode", help="Whether train mode is enabled or not (1 = True, 0 = False)", type=int)
 args = vars(parser.parse_args())
+inf_path = args['path']
 mode = args['mode']
 
 # Paths definitions
 nas_path = "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/"
-gt_path = nas_path + "nnUNet/nnUNet_raw/Dataset000_Petra_1class/labelsTr/"
-inf_path = nas_path + "inference_output/"
+gt_path = nas_path + "nnUNet/nnUNet_raw/Dataset005_Petra_65/labelsTr/"
+res_path = nas_path + inf_path
 csv_path = nas_path + "Correspondancies_ElectrodeDetection_Dataset.csv"
 
 # Read the CSV

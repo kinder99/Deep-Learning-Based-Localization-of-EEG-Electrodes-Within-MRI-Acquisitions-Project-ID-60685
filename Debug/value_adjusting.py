@@ -3,8 +3,8 @@
 ###
 ### Script used to modify incorrect labeling in NIfTI volumes.
 ###
-### Author : Kieran Le Mouël
-### Date : 7/06/2025
+### Author: Kieran Le Mouël
+### Date: 7/06/2025
 #########################################################################################################
 
 # Various imports

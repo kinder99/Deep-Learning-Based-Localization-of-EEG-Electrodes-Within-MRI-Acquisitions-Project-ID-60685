@@ -1,38 +1,38 @@
 % USAGE : Adapt paths until *** END USAGE *** 
 
 % Add the path where libs are
-addpath C:\Users\User\Desktop\Stage_Caroline\TED\Code\Matlab\Librairies\NIfTI_Librairy
+addpath '/home/klemouel/project/deep-learning-based-localization-of-eeg-electrodes-within-mri-acquisitions/Template-Based_Refinement/Librairies/NIfTI_Library'
  
 % Include the path where your functions are
-addpath C:\Users\User\Desktop\Stage_Caroline\TED\Code\Matlab\Functions
+addpath '/home/klemouel/project/deep-learning-based-localization-of-eeg-electrodes-within-mri-acquisitions/Template-Based_Refinement/Functions'
 
 %% Creation of the template EEG cap
 
 % TEMPLATE
-filename = 'C:\Users\User\Desktop\Stage_Caroline\TED\Results_Predictions\Post-Processed\template_petra.txt';
+% TODO : get the damned template
+filename = '/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/post_processing/petra_65/template_petra.txt';
 delimiterIn = ' ';
 headerlinesIn = 0;
 pt_templ = importdata(filename, delimiterIn, headerlinesIn);
 pt_templ_untouched = importdata(filename, delimiterIn, headerlinesIn);
 
-
 %% Loading of the detected coordinates
 
 % PETRA 
-nii = load_untouch_nii('C:\Users\User\Desktop\Stage_Caroline\TED\Data\UTE\S_8\15K\rUTE.nii');
+nii = load_untouch_nii('/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/Data/Raw/Hemisfer_Pilote/COU/30K/PETRA_30K.nii');
 
 % PRED Coordinates (from coord.py or any other extractor)
-filename = 'C:\Users\User\Desktop\Stage_Caroline\TED\Results_Predictions\Brut\Pred_UTE_V2\Hemisfer_120_coord.txt';
+filename = '/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/post_processing/petra_65/coords_output/Hemisfer_003_coords.txt';
 delimiterIn = ' ';
 headerlinesIn = 0;
 pt_detec = importdata(filename,delimiterIn,headerlinesIn);
 
-scoord = 'Hemisfer_120_postprocessed_coord.txt'; % optional : name
-s = 'Hemisfer_120_postprocessed.nii'; % optional : name
+scoord = 'Hemisfer_003_coords.txt'; % optional : name
+s = 'Hemisfer_003.nii'; % optional : name
 
 % OUTPUT PATH
 %cd('C:\Users\User\Desktop\Stage_Caroline\TED\Results_Predictions\Post-Processed\PostProcessed_UTE_V2\');
-cd('C:\Users\User\Desktop\');
+cd('/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/post_processing/petra_65/icp_output/');
 
 %*** END USAGE *** 
 
@@ -46,7 +46,7 @@ figure
            'FontWeight','bold','FontName',...
            'Times New Roman','Color','k')
 
-%% Suppr obvious outliers at the border of the image
+%% Delete obvious outliers at the border of the image
 
 index_list = [];
 
@@ -462,7 +462,7 @@ end
 %% Save
 
 %cd('C:\Users\User\Desktop\Stage_Caroline\TED\Results_Predictions\Post-Processed\PostProcessed_UTE_V3\');
-disp('Sauvegarde des coordonnées');
+disp('Sauvegarde des coordonnï¿½es');
 dlmwrite(scoord,pt_detec2)
 
 %% Sort electrodes for labeling

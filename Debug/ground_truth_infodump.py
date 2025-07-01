@@ -3,8 +3,8 @@
 ###
 ### Script used to compare ground truth metadata between binary and labeled datasets.
 ###
-### Author : Kieran Le Mouël
-### Date : 20/06/2025
+### Author: Kieran Le Mouël
+### Date: 20/06/2025
 #########################################################################################################
 
 # Various imports

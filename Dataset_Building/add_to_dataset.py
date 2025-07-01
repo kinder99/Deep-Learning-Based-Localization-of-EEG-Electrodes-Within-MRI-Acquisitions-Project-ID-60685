@@ -4,8 +4,8 @@
 ### Script used to move NIfTI volumes from temporary repository to nnUNet dataset repository, 
 ### and compress them.
 ###
-### Author : Kieran Le Mouël
-### Date : 11/06/2025
+### Author: Kieran Le Mouël
+### Date: 11/06/2025
 #########################################################################################################
 
 # Various imports
