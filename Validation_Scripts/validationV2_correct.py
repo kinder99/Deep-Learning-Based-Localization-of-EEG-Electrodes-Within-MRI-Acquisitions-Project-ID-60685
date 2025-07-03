@@ -119,7 +119,7 @@ for index, row in corr.iterrows():
                     nbMislabeled = nbMislabeled + 1
                     mislabeled.append((p_value,g_value))
 
-            print('Composante {0} : {1} corresponding to {2}, position error = {3} mm, label {4}-{5}'.format(i+1, predict_centers[i], corresponding_gTruth_centers[i], position_error[i], p_value, g_value))
+            #print('Composante {0} : {1} corresponding to {2}, position error = {3} mm, label {4}-{5}'.format(i+1, predict_centers[i], corresponding_gTruth_centers[i], position_error[i], p_value, g_value))
             position_error_label.append((g_value,position_error[i]))
 
         # Some statistics
