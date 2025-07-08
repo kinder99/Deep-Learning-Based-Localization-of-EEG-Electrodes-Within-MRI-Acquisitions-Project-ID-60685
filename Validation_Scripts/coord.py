@@ -15,10 +15,10 @@ import pandas as pd
 
 # Read the Prediction image
 nas_path = "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/"
-gt_path = nas_path + "nnUNet/nnUNet_raw/Dataset005_Petra_65/labelsTr/"
-inf_path = nas_path + "inference_output_petra_65class/"
+gt_path = nas_path + "nnUNet/nnUNet_raw/Dataset001_T1_65/labelsTr/"
+inf_path = nas_path + "inference_output_T1_65class/"
 csv_path = nas_path + "Correspondancies_ElectrodeDetection_Dataset.csv"
-out_path = nas_path + "post_processing/petra_65/coords_output/"
+out_path = nas_path + "post_processing/T1_65/coords_output/"
 
 corr = pd.read_csv(csv_path)
 

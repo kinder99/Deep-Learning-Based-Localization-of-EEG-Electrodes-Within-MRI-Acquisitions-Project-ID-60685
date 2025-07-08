@@ -18,7 +18,7 @@ import SimpleITK as sitk
 # Command line argument handling
 parser = argparse.ArgumentParser("check for mode", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("path", help="path to repository of images to work on, starts from root internship repo", type=str)
-parser.add_argument("mode", help="Whether train mode is enabled or not (1 = True, 0 = False)", type=int)
+parser.add_argument("mode", help="Whether test mode is enabled or not (1 = True, 0 = False)", type=int)
 args = vars(parser.parse_args())
 inf_path = args['path']
 mode = args['mode']

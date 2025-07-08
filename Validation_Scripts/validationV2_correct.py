@@ -20,13 +20,12 @@ import os
 # Paths definitions
 path_NAS = "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/"
 path_CSV = path_NAS + "Correspondancies_ElectrodeDetection_Dataset.csv"
-path_SAVE = path_NAS + "temp_gt_compare/"
 
 prefix = "Hemisfer_"
 suffix = ".nii.gz"
 
-output_err = path_NAS + 'post_processing/petra_65/pos_errors/'
-output_data = path_NAS + 'post_processing/petra_65/final_data/'
+output_err = path_NAS + 'post_processing/T1_65/pos_errors/'
+output_data = path_NAS + 'post_processing/T1_65/final_data/'
 
 # Reading the CSV
 corr = pd.read_csv(path_CSV)
@@ -43,7 +42,7 @@ for index, row in corr.iterrows():
 
         # Read the Ground Truth image and the Prediction image
         gTruth_image = sitk.ReadImage(path_NAS + "Data/Ground_Truths/" + row['Folder'] + "/" + row['Name'] + "/" + row['Quality'] + "/gt_seg.nii")
-        predict_image = sitk.ReadImage(path_NAS + "post_processing/petra_65/icp_output/Hemisfer_" + id + "_postprocessed.nii.gz")
+        predict_image = sitk.ReadImage(path_NAS + "post_processing/T1_65/icp_output/Hemisfer_" + id + "_postprocessed.nii.gz")
     
         # Compute the connected components of both images
 
