@@ -11,11 +11,16 @@
 import numpy as np
 import SimpleITK as sitk
 import math
-import nibabel as nib
 import pandas as pd
 from io import StringIO
 import sys
-import os
+import argparse
+
+# Receive command line arguments
+parser = argparse.ArgumentParser("define paths", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument("out_err_path", help="path to error output repository", type=str)
+parser.add_argument("out_dat_path", help="path to data output repository", type=str)
+args = vars(parser.parse_args())
 
 # Paths definitions
 path_NAS = "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/"
@@ -24,8 +29,8 @@ path_CSV = path_NAS + "Correspondancies_ElectrodeDetection_Dataset.csv"
 prefix = "Hemisfer_"
 suffix = ".nii.gz"
 
-output_err = path_NAS + 'post_processing/T1_65/pos_errors/'
-output_data = path_NAS + 'post_processing/T1_65/final_data/'
+output_err = path_NAS + args['out_err_path']
+output_data = path_NAS + args['out_dat_path']
 
 # Reading the CSV
 corr = pd.read_csv(path_CSV)

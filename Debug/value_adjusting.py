@@ -12,37 +12,25 @@ import nibabel as nib
 import numpy as np
 import pandas as pd
 import tqdm
+import argparse
+
+# Receive command line arguments 
+parser = argparse.ArgumentParser("define paths", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument("gt_path", help="path to ground truths", type=str)
+parser.add_argument("temp_path", help="path to temporary repository", type=str)
+args = vars(parser.parse_args())
 
 # Array containing all the ids for which the labeling is incorrect
-wrong_ids = ["028",
-            "033",
-            "035",
-            "042",
-            "044",
-            "046",
-            "048",
-            "027",
-            "041",
-            "043",
-            "034",
-            "032",
-            "045",
-            "047",
-            "049",
-            "050",
-            "054",
-            "056",
-            "052",
-            "058",
-            "051",
-            "053",
-            "057"]
+wrong_ids = ["028", "033", "035", "042", "044", "046",
+             "048", "027", "041", "043", "034", "032",
+             "045", "047", "049", "050", "054", "056",
+             "052", "058", "051", "053", "057"]
 
 # Paths definition
 nas_path = "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/"
-gt_path = nas_path + "Data/Ground_Truths/"
+gt_path = nas_path + args['gt_path']
 csv_path = nas_path + "Correspondancies_ElectrodeDetection_Dataset.csv"
-temp_path = nas_path + "temp_imgs/"
+temp_path = nas_path + args['temp_path']
 
 # Read the CSV
 corr = pd.read_csv(csv_path)

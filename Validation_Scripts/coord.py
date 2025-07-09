@@ -12,13 +12,21 @@ import numpy as np
 import SimpleITK as sitk
 import math
 import pandas as pd
+import argparse
+
+# Receive command line arguments
+parser = argparse.ArgumentParser("define paths", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument("gt_path", help="path to ground truths repository", type=str)
+parser.add_argument("inf_path", help="path to inferences repository", type=str)
+parser.add_argument("out_path", help="path to output repository", type=str)
+args = vars(parser.parse_args())
 
 # Read the Prediction image
 nas_path = "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/"
-gt_path = nas_path + "nnUNet/nnUNet_raw/Dataset001_T1_65/labelsTr/"
-inf_path = nas_path + "inference_output_T1_65class/"
+gt_path = nas_path + args['gt_path']
+inf_path = nas_path + args['inf_path']
 csv_path = nas_path + "Correspondancies_ElectrodeDetection_Dataset.csv"
-out_path = nas_path + "post_processing/T1_65/coords_output/"
+out_path = nas_path + args['out_path']
 
 corr = pd.read_csv(csv_path)
 
