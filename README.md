@@ -15,6 +15,14 @@ This repository contains the various scripts and functions used to support the s
 ## Usage
 The use of a Python virtual environment is highly recommended.
 
+Some of the scripts won't be necessary to use and are only there as special cases (mostly dataset fixing).
+
+The pipeline to follow is :
+
+`build_dataset.py` -> `nnU-Net training` -> `inferences` -> `coords.py` -> `post_processing.m` -> `validationV2_correct.py`
+
+Other scripts such as `electrode_counter.py`, `error_pos_plotter.ipynb` and `log_plotter.ipynb` can be used to give additionnal information throughout the process.
+
 Packages :
 - nnU-Net V2 (mandatory)
 - pytorch (mandatory)
