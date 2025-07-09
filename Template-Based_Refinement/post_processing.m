@@ -1,40 +1,33 @@
-% USAGE : Adapt paths until *** END USAGE *** 
+%% Initialization and data loading (made on a windows machine, adapt paths as needed according to os and repositories)
 
-% Add the path where libs are
-addpath C:\Users\User\Desktop\Stage_Caroline\TED\Code\Matlab\Librairies\NIfTI_Librairy
- 
-% Include the path where your functions are
-addpath C:\Users\User\Desktop\Stage_Caroline\TED\Code\Matlab\Functions
+% Path to libs
+addpath 'C:\Users\kiera\Documents\Unlimited_Home_Works\Internship2025\data\code\matlab\Libraries\NIfTI_Library'
 
-%% Creation of the template EEG cap
+% Path to homebrewed functions
+addpath 'C:\Users\kiera\Documents\Unlimited_Home_Works\Internship2025\data\code\matlab\Functions'
 
-% TEMPLATE
-filename = 'C:\Users\User\Desktop\Stage_Caroline\TED\Results_Predictions\Post-Processed\template_petra.txt';
+% Creation of the template EEG cap
+filename = 'C:\Users\kiera\Documents\Unlimited_Home_Works\Internship2025\data\post_processing\petra_65\template_petra.txt';
 delimiterIn = ' ';
 headerlinesIn = 0;
 pt_templ = importdata(filename, delimiterIn, headerlinesIn);
 pt_templ_untouched = importdata(filename, delimiterIn, headerlinesIn);
 
-
-%% Loading of the detected coordinates
-
+% Loading of the detected coordinates
 % PETRA 
-nii = load_untouch_nii('C:\Users\User\Desktop\Stage_Caroline\TED\Data\UTE\S_8\15K\rUTE.nii');
-
-% PRED Coordinates (from coord.py or any other extractor)
-filename = 'C:\Users\User\Desktop\Stage_Caroline\TED\Results_Predictions\Brut\Pred_UTE_V2\Hemisfer_120_coord.txt';
+nii = load_untouch_nii('C:\Users\kiera\Documents\Unlimited_Home_Works\Internship2025\data\Raw\Hemisfer_Pilote\ROP\60K\PETRA_60K.nii');
+% Predicted coordinates (from coord.py or any other extractor)
+filename = 'C:\Users\kiera\Documents\Unlimited_Home_Works\Internship2025\data\post_processing\petra_65\coords_output\Hemisfer_012_coords.txt';
 delimiterIn = ' ';
 headerlinesIn = 0;
 pt_detec = importdata(filename,delimiterIn,headerlinesIn);
 
-scoord = 'Hemisfer_120_postprocessed_coord.txt'; % optional : name
-s = 'Hemisfer_120_postprocessed.nii'; % optional : name
+scoord = 'Hemisfer_012_postprocessed_coord.txt'; % optional : name
+s = 'Hemisfer_012_postprocessed.nii'; % optional : name
 
-% OUTPUT PATH
+% Path to output repository
 %cd('C:\Users\User\Desktop\Stage_Caroline\TED\Results_Predictions\Post-Processed\PostProcessed_UTE_V2\');
-cd('C:\Users\User\Desktop\');
-
-%*** END USAGE *** 
+cd('C:\Users\kiera\Documents\Unlimited_Home_Works\Internship2025\data\post_processing\petra_65\icp_output\');
 
 figure
     %subplot(211)
@@ -42,14 +35,13 @@ figure
     axis('equal');
     legend({'Detected Point','Template Point'}, 'Location', 'southwest', ...
         'FontSize', 15)
-    title('Coord' ,'FontSize',18,...      %Titre du tracé
+    title('Coord' ,'FontSize',18,...      %Titre du trac��
            'FontWeight','bold','FontName',...
            'Times New Roman','Color','k')
 
-%% Suppr obvious outliers at the border of the image
+%% Delete obvious outliers at the border of the image
 
 index_list = [];
-
 for index = 1:size(pt_detec,1)
     if (pt_detec(index,1) < 15) || (pt_detec(index,2) < 15) || (pt_detec(index,3) < 15) || (pt_detec(index,1) > 305) || (pt_detec(index,2) > 305) || (pt_detec(index,3) > 305)
         index_list = [index_list,index];
@@ -60,15 +52,11 @@ for index2 = 1:size(index_list,1)
     pt_detec(index_list,:) = [];
 end
 
-%%
 %% Method 1 : too much detected coordinates
-%%
 
 if size(pt_detec,1) >= 65
-    
     disp('Method 1')
-    %% ICP
-
+    % ICP
     %[pt_recal , ~ ] = ICP_affine(pt_detec, pt_templ,1000,100);
     
     pt_templ_ptcloud = pointCloud(pt_templ);
@@ -78,19 +66,19 @@ if size(pt_detec,1) >= 65
     for x = -50:10:50
         for y = -50:10:50
             for z = -50:10:50
-                    M = [1, 0, 0, 0;
-                        0, 1, 0, 0;
-                        0, 0, 1, 0;
-                        x, y, z, 1];
-                    tform_init = affine3d(M);
-                    [tform,pt_recal_ptcloud,rmse] = pcregistericp(pt_templ_ptcloud,pt_detec_ptcloud,'MaxIterations',100,'InitialTransform',tform_init);
-                    if (rmse < error)
-                        error = rmse;
-                        pt_recal = pt_recal_ptcloud.Location; 
-                        best_tform = tform;
-                        disp('Best ICP1 :')
-                        disp(rmse)
-                    end  
+                M = [1, 0, 0, 0;
+                    0, 1, 0, 0;
+                    0, 0, 1, 0;
+                    x, y, z, 1];
+                tform_init = affine3d(M);
+                [tform,pt_recal_ptcloud,rmse] = pcregistericp(pt_templ_ptcloud,pt_detec_ptcloud,'MaxIterations',100,'InitialTransform',tform_init);
+                if (rmse < error)
+                    error = rmse;
+                    pt_recal = pt_recal_ptcloud.Location; 
+                    best_tform = tform;
+                    disp('Best ICP1 :')
+                    disp(rmse)
+                end  
             end
         end
     end
@@ -101,20 +89,20 @@ if size(pt_detec,1) >= 65
     axis('equal');
     legend({'Detected Point','Template Point'}, 'Location', 'southwest', ...
         'FontSize', 15)
-    title('ICP 1' ,'FontSize',18,...      %Titre du tracé
+    title('ICP 1' ,'FontSize',18,...      %Titre du trac��
            'FontWeight','bold','FontName',...
            'Times New Roman','Color','k')
    
    
-    %% Remove false positives
-
+    % Removing false positives
     pt_detec2 = [];
 
     for i = 1:size(pt_recal,1)
 
         max_dist = 1000;
 
-        % For each template electrode, associate the closest point from the detected
+        % For each template electrode, associate the closest point from the
+        % detected ones
         for j = 1:size(pt_detec,1)
             if ( abs(pt_recal(i,1)-pt_detec(j,1)) + abs(pt_recal(i,2)-pt_detec(j,2)) + abs(pt_recal(i,3)-pt_detec(j,3)) < max_dist )
                 max_dist = sqrt((pt_recal(i,1)-pt_detec(j,1)).^2 + (pt_recal(i,2)-pt_detec(j,2)).^2 + (pt_recal(i,3)-pt_detec(j,3)).^2);
@@ -123,7 +111,8 @@ if size(pt_detec,1) >= 65
             end
         end
 
-        % Add the associated point in order to keep only the complementary points
+        % Add the associated point in order to keep only the complementary 
+        % points
         if (max_dist*0.9375) < 15
             pt_detec2 = [pt_detec2;pt_detec(closest_recal,:)];
         end
@@ -136,12 +125,11 @@ if size(pt_detec,1) >= 65
     axis('equal');
     legend({'Detected Point','Template Point'}, 'Location', 'southwest', ...
         'FontSize', 15)
-    title('Remove false positives ' ,'FontSize',18,...      %Titre du tracé
+    title('Removed false positives ' ,'FontSize',18,...      %Titre du trac��
            'FontWeight','bold','FontName',...
            'Times New Roman','Color','k')
    
-    %% ICP 2
-
+    % ICP 2
     %[pt_recal , ~ ] = ICP_affine(pt_detec2, pt_templ,1000,100);
     
     pt_templ_ptcloud = pointCloud(pt_templ);
@@ -151,19 +139,19 @@ if size(pt_detec,1) >= 65
     for x = -50:10:50
         for y = -50:10:50
             for z = -50:10:50
-                    M = [1, 0, 0, 0;
-                        0, 1, 0, 0;
-                        0, 0, 1, 0;
-                        x, y, z, 1];
-                    tform_init = affine3d(M);
-                    [tform,pt_recal_ptcloud,rmse] = pcregistericp(pt_templ_ptcloud,pt_detec_ptcloud,'MaxIterations',100,'InitialTransform',tform_init);
-                    if (rmse < error)
-                        error = rmse;
-                        pt_recal = pt_recal_ptcloud.Location; 
-                        best_tform = tform;
-                        disp('Best ICP2 :')
-                        disp(rmse)
-                    end  
+                M = [1, 0, 0, 0;
+                    0, 1, 0, 0;
+                    0, 0, 1, 0;
+                    x, y, z, 1];
+                tform_init = affine3d(M);
+                [tform,pt_recal_ptcloud,rmse] = pcregistericp(pt_templ_ptcloud,pt_detec_ptcloud,'MaxIterations',100,'InitialTransform',tform_init);
+                if (rmse < error)
+                    error = rmse;
+                    pt_recal = pt_recal_ptcloud.Location; 
+                    best_tform = tform;
+                    disp('Best ICP2 :')
+                    disp(rmse)
+                end  
             end
         end
     end
@@ -174,15 +162,12 @@ if size(pt_detec,1) >= 65
     axis('equal');
     legend({'Detected Point','Template Point'}, 'Location', 'southwest', ...
         'FontSize', 15)
-    title('ICP 2 ' ,'FontSize',18,...      %Titre du tracé
+    title('ICP 2 ' ,'FontSize',18,...      %Titre du trac��
            'FontWeight','bold','FontName',...
            'Times New Roman','Color','k')
 
-   
-    %% Add to the detected points the coordinates from the template when missing
-
-    for i = 1:size(pt_detec2,1)
-        
+    % Add the coordinates from the template to the detected points array when missing
+    for i = 1:size(pt_detec2,1)        
         max_dist = 1000;
 
         % For each detected electrode, associate the closest point from the template
@@ -190,15 +175,14 @@ if size(pt_detec,1) >= 65
             if ( abs(pt_detec2(i,1)-pt_recal(j,1)) + abs(pt_detec2(i,2)-pt_recal(j,2)) + abs(pt_detec2(i,3)-pt_recal(j,3)) < max_dist )
                 max_dist = sqrt((pt_detec2(i,1)-pt_recal(j,1)).^2 + (pt_detec2(i,2)-pt_recal(j,2)).^2 + (pt_detec2(i,3)-pt_recal(j,3)).^2);
                 closest_recal = j;
-                
             end
         end
-        % Suppr the associated point in order to keep only the complementary points
+        % Delete the associated point in order to keep only the complementary points
         pt_recal(closest_recal,:) = [];
 
     end
 
-    % Final positions for the 65 electrodes
+    % Final positions of the 65 electrodes
     pt_detec2 = [pt_detec2;pt_recal];
 
     figure
@@ -207,17 +191,15 @@ if size(pt_detec,1) >= 65
     axis('equal');
     legend({'Detected Point','Template Point'}, 'Location', 'southwest', ...
         'FontSize', 15)
-    title('Add the missing electrodes ' ,'FontSize',18,...      %Titre du tracé
+    title('Add the missing electrodes ' ,'FontSize',18,...      %Titre du trac��
            'FontWeight','bold','FontName',...
            'Times New Roman','Color','k')
     
-%%
+
 %% Method 2 : not enough detected coordinates
-%%
 else
     disp('Method 2')
-    %% ICP
-
+    % ICP
 %     [pt_recal , ~ ] = ICP_affine(pt_templ, pt_detec,1000,100);
 
 %     T = [0.997019266142096, 0.0641697552888403, -0.0428348625263036, 0;
@@ -241,7 +223,7 @@ else
 %     axis('equal');
 %     legend({'Detected Point','Template Point'}, 'Location', 'southwest', ...
 %         'FontSize', 15)
-%     title('ICP 1' ,'FontSize',18,...      %Titre du tracé
+%     title('ICP 1' ,'FontSize',18,...      %Titre du trac��
 %            'FontWeight','bold','FontName',...
 %            'Times New Roman','Color','k')
     pt_templ_ptcloud = pointCloud(pt_templ);
@@ -251,21 +233,21 @@ else
     for x = -50:10:50
         for y = -50:10:50
             for z = -50:10:50
-                    M = [1, 0, 0, 0;
-                        0, 1, 0, 0;
-                        0, 0, 1, 0;
-                        x, y, z, 1];
-                    tform_init = affine3d(M);
-                    [tform,pt_recal_ptcloud,rmse] = pcregistericp(pt_detec_ptcloud,pt_templ_ptcloud,'MaxIterations',100,'InitialTransform',tform_init);
-                    if (rmse < error)
-                        error = rmse;
-                        pt_recal = pt_recal_ptcloud.Location; 
-                        best_tform = tform;
-                        disp('Best ICP1 :')
-                        disp(rmse)
-                    end  
-                    %disp('ICP1 :')
-                    %disp(rmse)
+                M = [1, 0, 0, 0;
+                    0, 1, 0, 0;
+                    0, 0, 1, 0;
+                    x, y, z, 1];
+                tform_init = affine3d(M);
+                [tform,pt_recal_ptcloud,rmse] = pcregistericp(pt_detec_ptcloud,pt_templ_ptcloud,'MaxIterations',100,'InitialTransform',tform_init);
+                if (rmse < error)
+                    error = rmse;
+                    pt_recal = pt_recal_ptcloud.Location; 
+                    best_tform = tform;
+                    disp('Best ICP1 :')
+                    disp(rmse)
+                end  
+                %disp('ICP1 :')
+                %disp(rmse)
             end
         end
     end
@@ -283,12 +265,11 @@ else
     axis('equal');
     legend({'Detected Point','Template Point'}, 'Location', 'southwest', ...
         'FontSize', 15)
-    title('ICP 1' ,'FontSize',18,...      %Titre du tracé
+    title('ICP 1' ,'FontSize',18,...      %Titre du trac��
            'FontWeight','bold','FontName',...
            'Times New Roman','Color','k')
        
-    %% Compute the rotation matrix
-
+    % Compute the rotation matrix
     pt_detec_absor = transpose(pt_detec);
     pt_recal_absor = transpose(pt_recal);
 
@@ -305,8 +286,7 @@ else
     Translation = regParams.t;
     Scale = regParams.s;
       
-    %% Remove false positives
-
+    % Remove false positives
     pt_detec2 = [];
 
     for i = 1:size(pt_templ,1)
@@ -335,12 +315,11 @@ else
     axis('equal');
     legend({'Detected Point','Template Point'}, 'Location', 'southwest', ...
         'FontSize', 15)
-    title('Remove false positives ' ,'FontSize',18,...      %Titre du tracé
+    title('Remove false positives ' ,'FontSize',18,...      %Titre du trac��
            'FontWeight','bold','FontName',...
            'Times New Roman','Color','k')
        
-%% ICP 2
-
+% ICP 2
 %     [pt_recal , ~ ] = ICP_affine(pt_templ, pt_detec2,1000,100);
 %     pt_templ_ptcloud = pointCloud(pt_templ);
 %     pt_detec_ptcloud = pointCloud(pt_detec2);
@@ -356,19 +335,19 @@ else
     for x = -50:10:50
         for y = -50:10:50
             for z = -50:10:50
-                    M = [1, 0, 0, 0;
-                        0, 1, 0, 0;
-                        0, 0, 1, 0;
-                        x, y, z, 1];
-                    tform_init = affine3d(M);
-                    [tform,pt_recal_ptcloud,rmse] = pcregistericp(pt_detec_ptcloud,pt_templ_ptcloud,'MaxIterations',100,'InitialTransform',tform_init);
-                    if (rmse < error)
-                        error = rmse;
-                        pt_recal = pt_recal_ptcloud.Location; 
-                        best_tform = tform;
-                        disp('Best ICP2 :')
-                        disp(rmse)
-                    end  
+                M = [1, 0, 0, 0;
+                    0, 1, 0, 0;
+                    0, 0, 1, 0;
+                    x, y, z, 1];
+                tform_init = affine3d(M);
+                [tform,pt_recal_ptcloud,rmse] = pcregistericp(pt_detec_ptcloud,pt_templ_ptcloud,'MaxIterations',100,'InitialTransform',tform_init);
+                if (rmse < error)
+                    error = rmse;
+                    pt_recal = pt_recal_ptcloud.Location; 
+                    best_tform = tform;
+                    disp('Best ICP2 :')
+                    disp(rmse)
+                end  
             end
         end
     end
@@ -379,12 +358,11 @@ else
     axis('equal');
     legend({'Detected Point','Template Point'}, 'Location', 'southwest', ...
         'FontSize', 15)
-    title('ICP 2 ' ,'FontSize',18,...      %Titre du tracé
+    title('ICP 2 ' ,'FontSize',18,...      %Titre du trac��
            'FontWeight','bold','FontName',...
            'Times New Roman','Color','k')
        
-%% Compute the rotation matrix 2
-
+% Compute the rotation matrix 2
     pt_detec_absor2 = transpose(pt_detec2);
     pt_recal_absor2 = transpose(pt_recal);
 
@@ -403,10 +381,8 @@ else
     
     pt_detec2 = pt_recal;
        
-    %% Add to the detected points the coordinates from the template when missing
-
+    % Add the coordinates from the template to the detected points array when missing
     for i = 1:size(pt_detec2,1)
-
         max_dist = 1000;
 
         % For each detected electrode, associate the closest point from the template
@@ -414,15 +390,13 @@ else
             if ( abs(pt_detec2(i,1)-pt_templ(j,1)) + abs(pt_detec2(i,2)-pt_templ(j,2)) + abs(pt_detec2(i,3)-pt_templ(j,3)) < max_dist )
                 max_dist = sqrt((pt_detec2(i,1)-pt_templ(j,1)).^2 + (pt_detec2(i,2)-pt_templ(j,2)).^2 + (pt_detec2(i,3)-pt_templ(j,3)).^2);
                 closest_recal = j;
-               
             end
         end
         % Suppr the associated point in order to keep only the complementary points
         pt_templ(closest_recal,:) = [];
-
     end
 
-    % Final positions for the 65 electrodes
+    % Final positions of the 65 electrodes
     pt_detec2 = [pt_detec2;pt_templ];
 
     figure
@@ -431,18 +405,14 @@ else
     axis('equal');
     legend({'Detected Point','Template Point'}, 'Location', 'southwest', ...
         'FontSize', 15)
-    title('Add missing electrodes ' ,'FontSize',18,...      %Titre du tracé
+    title('Add missing electrodes ' ,'FontSize',18,...      %Titre du trac��
            'FontWeight','bold','FontName',...
            'Times New Roman','Color','k')
        
-    %% ICP INVERSE
-    
+    % ICP INVERSE
     M2 = creation_mat_transformation(Scale2*Rotation2 , Translation2);
-
     pt_detec2 = movepoints(M2,pt_detec2);
-
     M = creation_mat_transformation(Scale*Rotation , Translation);
-
     pt_detec2 = movepoints(M,pt_detec2);
 
     figure
@@ -451,24 +421,20 @@ else
     axis('equal');
     legend({'Detected Point','Template Point'}, 'Location', 'southwest', ...
         'FontSize', 15)
-    title('Move to original coordinates' ,'FontSize',18,...      %Titre du tracé
+    title('Move to original coordinates' ,'FontSize',18,...      %Titre du trac��
            'FontWeight','bold','FontName',...
            'Times New Roman','Color','k')
-    
 end
     
     
 
 %% Save
-
 %cd('C:\Users\User\Desktop\Stage_Caroline\TED\Results_Predictions\Post-Processed\PostProcessed_UTE_V3\');
-disp('Sauvegarde des coordonn�es');
+disp('Sauvegarde des coordonnées');
 dlmwrite(scoord,pt_detec2)
 
-%% Sort electrodes for labeling
-
+% Sort electrodes for labeling
 %[pt_templ_label , ~ ] = ICP_affine(pt_detec2, pt_templ_untouched,1000,100);
-
     pt_templ_ptcloud = pointCloud(pt_templ_untouched);
     pt_detec_ptcloud = pointCloud(pt_detec2);
     error = 1000;
@@ -476,17 +442,17 @@ dlmwrite(scoord,pt_detec2)
     for x = -50:10:50
         for y = -50:10:50
             for z = -50:10:50
-                    M = [1, 0, 0, 0;
-                        0, 1, 0, 0;
-                        0, 0, 1, 0;
-                        x, y, z, 1];
-                    tform_init = affine3d(M);
-                    [tform,pt_recal_ptcloud,rmse] = pcregistericp(pt_templ_ptcloud,pt_detec_ptcloud,'MaxIterations',100,'InitialTransform',tform_init);
-                    if (rmse < error)
-                        error = rmse;
-                        pt_templ_label = pt_recal_ptcloud.Location; 
-                        best_tform = tform;
-                    end  
+                M = [1, 0, 0, 0;
+                    0, 1, 0, 0;
+                    0, 0, 1, 0;
+                    x, y, z, 1];
+                tform_init = affine3d(M);
+                [tform,pt_recal_ptcloud,rmse] = pcregistericp(pt_templ_ptcloud,pt_detec_ptcloud,'MaxIterations',100,'InitialTransform',tform_init);
+                if (rmse < error)
+                    error = rmse;
+                    pt_templ_label = pt_recal_ptcloud.Location; 
+                    best_tform = tform;
+                end  
             end
         end
     end
@@ -497,12 +463,11 @@ figure
     axis('equal');
     legend({'Detected Point','Template Point'}, 'Location', 'southwest', ...
         'FontSize', 15)
-    title('Move to original coordinates' ,'FontSize',18,...      %Titre du tracé
+    title('Move to original coordinates' ,'FontSize',18,...      %Titre du trac��
            'FontWeight','bold','FontName',...
            'Times New Roman','Color','k')
 
 pt_detec_sort = [];
-
 for i = 1:size(pt_templ_label,1)
     max_dist = 1000;
     for j = 1:size(pt_detec2,1)
@@ -514,10 +479,7 @@ for i = 1:size(pt_templ_label,1)
     pt_detec_sort = [pt_detec_sort;pt_detec2(closest_recal,:)];
 end
 
-
-
-%% Segmentation map
-
+% Segmentation map
 coords = pt_detec_sort;
 n = 320 ; 
 [T , U, V] = ndgrid(1:n , 1:n, 1:n);
@@ -553,7 +515,7 @@ end
 % Uncomment for gt.nii
 %F = F>0 ;
 
-disp('Sauvegarde des spheres');
+disp('Sauvegarde des sphères');
 nii.img = F; 
 
 save_untouch_nii(nii , s);
