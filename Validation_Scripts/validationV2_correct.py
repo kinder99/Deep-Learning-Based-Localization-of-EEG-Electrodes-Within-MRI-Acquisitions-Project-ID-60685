@@ -1,11 +1,11 @@
-#########################################################################################################
-### VALIDATION V2
-###
-### Compare the ground truth segmentation with the predicted segmentation for the second model.
-###
-### Authors: Caroline Pinte, Kieran Le Mouël
-### Date: 10/08/2020, Modified: 01/07/2025
-#########################################################################################################
+###########################################################################################################
+### VALIDATION V2                                                                                       ###
+###                                                                                                     ###
+### Compare the ground truth segmentation with the predicted segmentation for the second model.         ###
+###                                                                                                     ###
+### Authors: Caroline Pinte, Kieran Le Mouël                                                            ###
+### Date: 10/08/2020, Modified: 01/07/2025                                                              ###
+###########################################################################################################
 
 # Load the required modules
 import numpy as np
