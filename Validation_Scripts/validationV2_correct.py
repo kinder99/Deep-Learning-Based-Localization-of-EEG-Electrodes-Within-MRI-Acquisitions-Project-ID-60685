@@ -32,6 +32,9 @@ suffix = ".nii.gz"
 output_err = path_NAS + args['out_err_path']
 output_data = path_NAS + args['out_dat_path']
 
+# output_err = path_NAS + "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/trans/after_validation/err/"
+# output_data = path_NAS + "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/trans/after_validation/data/" 
+
 # Reading the CSV
 corr = pd.read_csv(path_CSV)
 
@@ -47,7 +50,9 @@ for index, row in corr.iterrows():
 
         # Read the Ground Truth image and the Prediction image
         gTruth_image = sitk.ReadImage(path_NAS + "Data/Ground_Truths/" + row['Folder'] + "/" + row['Name'] + "/" + row['Quality'] + "/gt_seg.nii")
-        predict_image = sitk.ReadImage(path_NAS + "post_processing/T1_65/icp_output/Hemisfer_" + id + "_postprocessed.nii.gz")
+        # predict_image = sitk.ReadImage(path_NAS + "post_processing/T1_65/icp_output/Hemisfer_" + id + "_postprocessed.nii.gz")
+        with open(path_NAS + "trans/after_matrix/ID_"+id+"_sorted_trans.txt", 'r') as f:
+            data = f.read()
     
         # Compute the connected components of both images
 
@@ -58,10 +63,10 @@ for index, row in corr.iterrows():
         print('Ground Truth : Number of connected components = {0}'.format(gTruth_nbObjects))
 
         # Prediction
-        predict_components = sitk.ConnectedComponentImageFilter()
-        predict_label = predict_components.Execute( predict_image )
-        predict_nbObjects = predict_components.GetObjectCount()
-        print('Prediction : Number of connected components = {0}'.format(predict_nbObjects))
+        # predict_components = sitk.ConnectedComponentImageFilter()
+        # predict_label = predict_components.Execute( predict_image )
+        # predict_nbObjects = predict_components.GetObjectCount()
+        # print('Prediction : Number of connected components = {0}'.format(predict_nbObjects))
 
         # Compute the image statistics and find the center of each sphere for both images
 
@@ -79,17 +84,17 @@ for index, row in corr.iterrows():
             gTruth_centers.append(center)
 
         # Prediction
-        predict_stats = sitk.LabelStatisticsImageFilter()
-        predict_stats.Execute( predict_image , predict_label )
+        # predict_stats = sitk.LabelStatisticsImageFilter()
+        # predict_stats.Execute( predict_image , predict_label )
 
-        predict_centers = []
-        for i in range(1,predict_nbObjects+1) :
-            bb = predict_stats.GetBoundingBox(i)
-            x = math.ceil((bb[0] + bb[1]+1) / 2)
-            y = math.ceil((bb[2] + bb[3]+1) / 2)
-            z = math.ceil((bb[4] + bb[5]+1) / 2)
-            center = (x,y,z)
-            predict_centers.append(center)
+        # predict_centers = []
+        # for i in range(1,predict_nbObjects+1) :
+        #     bb = predict_stats.GetBoundingBox(i)
+        #     x = math.ceil((bb[0] + bb[1]+1) / 2)
+        #     y = math.ceil((bb[2] + bb[3]+1) / 2)
+        #     z = math.ceil((bb[4] + bb[5]+1) / 2)
+        #     center = (x,y,z)
+        #     predict_centers.append(center)
 
         # Compute the association between the corresponding centers and position error
         corresponding_gTruth_centers = []
@@ -99,12 +104,22 @@ for index, row in corr.iterrows():
         mislabeled = []
         position_error_label = []
 
+        l = data.split("\n")
+        l.pop(-1)
+        predict_centers = []
+        for elec in l:
+            tmp = elec.split(" ")
+            predict_centers.append((float(tmp[0]), float(tmp[1]), float(tmp[2])))
+
+        print(gTruth_centers)
+        print(predict_centers)
+
         for i in range(0, len(predict_centers)) :
             max_dist = 1000
             p_x = predict_centers[i][0]
             p_y = predict_centers[i][1]
             p_z = predict_centers[i][2]
-            p_value = predict_image.GetPixel(p_x-1,p_y-1,p_z-1)
+            # p_value = predict_image.GetPixel(p_x-1,p_y-1,p_z-1)
                 
             for j in range(0, len(gTruth_centers)) :
                 g_x = gTruth_centers[j][0]
@@ -119,9 +134,9 @@ for index, row in corr.iterrows():
             corresponding_gTruth_centers.append(corresponding_center)
             position_error_mm = max_dist*pixel2mm
             position_error.append(position_error_mm)
-            if (p_value != g_value) :
-                    nbMislabeled = nbMislabeled + 1
-                    mislabeled.append((p_value,g_value))
+            # if (p_value != g_value) :
+            #         nbMislabeled = nbMislabeled + 1
+            #         mislabeled.append((p_value,g_value))
 
             #print('Composante {0} : {1} corresponding to {2}, position error = {3} mm, label {4}-{5}'.format(i+1, predict_centers[i], corresponding_gTruth_centers[i], position_error[i], p_value, g_value))
             position_error_label.append((g_value,position_error[i]))
@@ -144,7 +159,7 @@ for index, row in corr.iterrows():
             # Outliers
             if (position_error[index] > 10) :
                 nbOutliers = nbOutliers + 1
-                print('Outlier : {0} {1}'.format(predict_centers[index], position_error[index]))
+                # print('Outlier : {0} {1}'.format(predict_centers[index], position_error[index]))
 
         for coord1 in range(0, len(corresponding_gTruth_centers)) :
             double = 0
@@ -152,12 +167,14 @@ for index, row in corr.iterrows():
                 if (corresponding_gTruth_centers[coord1] == corresponding_gTruth_centers[others]) :
                     if (predict_centers[coord1] != predict_centers[others]) :
                         nbDoubles = nbDoubles + 1
-                        print('Double : {0} et {1}'.format(predict_centers[coord1], predict_centers[others]))
+                        # print('Double : {0} et {1}'.format(predict_centers[coord1], predict_centers[others]))
 
         meanPE = sumTotal / nbTotal
         stdPE = np.std(position_error)
-        true_positives = predict_nbObjects - nbOutliers
-        ppv = (true_positives / predict_nbObjects)*100
+        # true_positives = predict_nbObjects - nbOutliers
+        # ppv = (true_positives / predict_nbObjects)*100
+        true_positives = 65 - nbOutliers
+        ppv = (true_positives / 65)*100
         nbDoubles = nbDoubles / 2 # compted twice for each
 
         # Get standard output as string 
