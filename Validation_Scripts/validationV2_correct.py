@@ -23,7 +23,8 @@ parser.add_argument("out_dat_path", help="path to data output repository", type=
 args = vars(parser.parse_args())
 
 # Paths definitions
-path_NAS = "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/"
+# path_NAS = "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/"
+path_NAS = "C:\\Users\\kiera\\Documents\\Unlimited_Home_Works\\Internship2025\\data\\"
 path_CSV = path_NAS + "Correspondancies_ElectrodeDetection_Dataset.csv"
 
 prefix = "Hemisfer_"
