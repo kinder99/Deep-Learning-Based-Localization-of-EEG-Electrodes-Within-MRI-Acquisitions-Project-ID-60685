@@ -1,7 +1,7 @@
 # Deep Learning-Based Localization of EEG Electrodes Within MRI Acquisitions
 
 ## Purpose
-This repository contains the various scripts and functions used to support the segmentation of electrodes in fMRI volumes in an EEG-fMRI context.
+This repository contains the various scripts and functions used to support the segmentation of electrodes in MRI volumes in an EEG-fMRI context.
 
 ## Languages
 - Python
@@ -11,6 +11,7 @@ This repository contains the various scripts and functions used to support the s
 - refactoring it to work with nnU-Net v2
 - testing said refactored method on T1 images
 - adding scripts to test and extract information from training and trained datasets
+- adding comparison to a state of the art method in the form of Brainstorm template matching.
 
 ## Usage
 The use of a Python virtual environment is highly recommended.
@@ -19,7 +20,7 @@ Some of the scripts won't be necessary to use and are only there as special case
 
 The pipeline to follow is :
 
-`build_dataset.py` -> `nnU-Net training` -> `inferences` -> `coords.py` -> `post_processing.m` -> `validationV2_correct.py`
+`build_dataset.py` -> `nnU-Net training` -> `run inferences` -> `coords.py` -> `post_processing.m` -> `validationV2_correct.py`
 
 Other scripts such as `electrode_counter.py`, `error_pos_plotter.ipynb` and `log_plotter.ipynb` can be used to give additionnal information throughout the process.
 
