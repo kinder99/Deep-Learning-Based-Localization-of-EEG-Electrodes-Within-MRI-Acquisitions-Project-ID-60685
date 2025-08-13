@@ -17,10 +17,10 @@ import sys
 import argparse
 
 # Receive command line arguments
-parser = argparse.ArgumentParser("define paths", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("out_err_path", help="path to error output repository", type=str)
-parser.add_argument("out_dat_path", help="path to data output repository", type=str)
-args = vars(parser.parse_args())
+# parser = argparse.ArgumentParser("define paths", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+# parser.add_argument("out_err_path", help="path to error output repository", type=str)
+# parser.add_argument("out_dat_path", help="path to data output repository", type=str)
+# args = vars(parser.parse_args())
 
 # Paths definitions
 # path_NAS = "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/"
@@ -30,8 +30,11 @@ path_CSV = path_NAS + "Correspondancies_ElectrodeDetection_Dataset.csv"
 prefix = "Hemisfer_"
 suffix = ".nii.gz"
 
-output_err = path_NAS + args['out_err_path']
-output_data = path_NAS + args['out_dat_path']
+# output_err = path_NAS + "post_processing\\T1_65\\brainstorm_err\\"#args['out_err_path']
+# output_data = path_NAS + "post_processing\\T1_65\\brainstorm_data\\"#args['out_dat_path']
+
+output_err = path_NAS + "post_processing\\T1_65\\pos_errors\\"#args['out_err_path']
+output_data = path_NAS + "post_processing\\T1_65\\final_data\\"#args['out_dat_path']
 
 # output_err = path_NAS + "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/trans/after_validation/err/"
 # output_data = path_NAS + "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/trans/after_validation/data/" 
@@ -50,9 +53,11 @@ for index, row in corr.iterrows():
         name = prefix + id + suffix # Set name according to nomenclature
 
         # Read the Ground Truth image and the Prediction image
-        gTruth_image = sitk.ReadImage(path_NAS + "Data/Ground_Truths/" + row['Folder'] + "/" + row['Name'] + "/" + row['Quality'] + "/gt_seg.nii")
+        gTruth_image = sitk.ReadImage(path_NAS + "Results_GroundTruth" + "\\" + row['Folder'] + "\\" + row['Name'] + "\\" + row['Quality'] + "\\gt_seg.nii")
         # predict_image = sitk.ReadImage(path_NAS + "post_processing/T1_65/icp_output/Hemisfer_" + id + "_postprocessed.nii.gz")
-        with open(path_NAS + "trans/after_matrix/ID_"+id+"_sorted_trans.txt", 'r') as f:
+        # with open(path_NAS + "trans\\after_convert\\ID_"+id+"_converted.txt", 'r') as f:
+        #     data = f.read()
+        with open(path_NAS + "post_processing\\T1_65\\icp_output\\Hemisfer_"+id+"_postprocessed_coord.txt", 'r') as f:
             data = f.read()
     
         # Compute the connected components of both images
@@ -109,11 +114,11 @@ for index, row in corr.iterrows():
         l.pop(-1)
         predict_centers = []
         for elec in l:
-            tmp = elec.split(" ")
+            tmp = elec.split(",")
             predict_centers.append((float(tmp[0]), float(tmp[1]), float(tmp[2])))
 
-        print(gTruth_centers)
-        print(predict_centers)
+        # print(gTruth_centers)
+        # print(predict_centers)
 
         for i in range(0, len(predict_centers)) :
             max_dist = 1000

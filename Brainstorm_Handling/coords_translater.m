@@ -1,92 +1,58 @@
 clear
 close all
 clc
-%% Translate channel file into readable txt file and adapt contents to current scale
+%% Translate channel file into readable txt file
 
 cd('C:\Users\kiera\Documents\Unlimited_Home_Works\Internship2025\data\T1_test_dataset_data_brainstorm\')
 
-name = 'ID_060';
+id = '039';
 
-channel = load(strcat(name, '\@intra\channel.mat'));
+channel = load(strcat('ID_',id, '\@intra\channel.mat'));
 data = channel.Channel;
 
 coords = [];
 for i = 1:65
-    dat = data(i).Loc * 1000;
+    dat = data(i).Loc;
     res = [ convertCharsToStrings(data(i).Name) dat' ];
     coords = [ coords; res ];
 end
 
 cd('C:\Users\kiera\Documents\Unlimited_Home_Works\Internship2025\data\trans\')
 
-writematrix(coords,strcat(name,'.txt'))
-%% compute transformation matrix using absor 
+writematrix(coords,strcat('ID_',id,'.txt'))
+%% load brainstorm coordinates
 
 cd('C:\Users\kiera\Documents\Unlimited_Home_Works\Internship2025\data\trans\')
 
-fid = fopen('template_positions.txt');
-s = textscan(fid, '%s %n %n %n','delimiter',',');
-fclose(fid);
-
-sauce_labels = s{1};
-sauce(:,1) = s{2};
-sauce(:,2) = s{3};
-sauce(:,3) = s{4};
-
-fid = fopen('../EEG_template.txt');
-t = textscan(fid, '%s %n %n %n','delimiter',',');
-fclose(fid);
-
-target_labels = t{1};
-target(:,1) = t{2};
-target(:,2) = t{3};
-target(:,3) = t{4};
-
-addpath 'C:\Users\kiera\Documents\Unlimited_Home_Works\Internship2025\data\code\matlab\Functions'
-
-[ regParams, BFit, ErrorStats ] = absor(sauce', target', 'doScale', true, 'doTrans', true);
-%% get subject data
-
-cd('C:\Users\kiera\Documents\Unlimited_Home_Works\Internship2025\data\trans\')
-
-fid = fopen(strcat('after_sorting/',name,'_sorted.txt'));
+fid = fopen(strcat('after_sorting/ID_',id,'_sorted.txt'));
 r = textscan(fid, '%s %n %n %n','delimiter',',');
 fclose(fid);
 
 res = [];
 res_labels = r{1};
-res(:,1) = r{2};
-res(:,2) = r{3};
+res(:,1) = -r{2};
+res(:,2) = -r{3};
 res(:,3) = r{4};
 
-resed = regParams.R * res' + regParams.t;
+%% convert coordinate system
+cd('C:\Users\kiera\Documents\Unlimited_Home_Works\Internship2025\data\post_processing\T1_65\brainstorm_mris\')
 
-resed = resed';
-%% plot
+temp = load(strcat(id,'.mat'));
 
-plot3(resed(:,1),resed(:,2),resed(:,3),'bo',target(:,1),target(:,2),target(:,3),'r*');
-for n = 1:65
-    text(resed(n,1),resed(n,2),resed(n,3),res_labels(n));
-    text(target(n,1),target(n,2),target(n,3),target_labels(n));
-end
-axis('equal');
-legend({'ICP Point','Brainstorm Point'}, 'Location', 'southwest', ...
-        'FontSize', 15)
-%% saving
+P = cs_convert(temp, 'scs', 'voxel', res);
 
-cd('C:\Users\kiera\Documents\Unlimited_Home_Works\Internship2025\data\trans\after_matrix\')
+cd('C:\Users\kiera\Documents\Unlimited_Home_Works\Internship2025\data\trans\after_convert\')
 
-dlmwrite(strcat(name,'_sorted_trans.txt'), resed, ' ');
-%% compute and save distances
+writematrix(P, strcat('ID_',id,'_converted.txt'))
 
-dis = [];
-for i = 1:65
-    res_point = [resed(i,1) resed(i,2) resed(i,3)];
-    tar_point = [target(i,1) target(i,2) target(i,3)];
-    dis = [dis norm(res_point - tar_point)];
-end
-dis = dis';
+%% plotting
 
-cd('C:\Users\kiera\Documents\Unlimited_Home_Works\Internship2025\data\trans\distances\')
-
-dlmwrite(strcat(name,'_distances.txt'),dis)
+% plot3(P(:,1),P(:,2),P(:,3),'bo',target(:,1),target(:,2),target(:,3),'r*'); %,res(:,1),res(:,2),res(:,3),'g+'
+% for n = 1:65
+%     text(P(n,1),P(n,2),P(n,3),target_labels(n));
+%     text(target(n,1),target(n,2),target(n,3),target_labels(n));
+%     % text(res(n,1),res(n,2),res(n,3),res_labels(n));
+% end
+% axis('equal');
+% legend({'Modified Brainstorm','ICP Point','Brainstorm Point'}, 'Location', 'southwest', ...
+%         'FontSize', 15)

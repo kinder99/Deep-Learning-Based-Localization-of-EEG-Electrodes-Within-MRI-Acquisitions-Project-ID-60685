@@ -14,10 +14,11 @@ import sys
 import argparse
 
 # Recieve command line arguments
-parser = argparse.ArgumentParser("define paths", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("data_path", help="path to data directory", type=str)
-args = vars(parser.parse_args())
-data_path = args['data_path']
+# parser = argparse.ArgumentParser("define paths", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+# parser.add_argument("data_path", help="path to data directory", type=str)
+# args = vars(parser.parse_args())
+path = "C:\\Users\\kiera\\Documents\\Unlimited_Home_Works\\Internship2025\\data\\"
+data_path = "C:\\Users\\kiera\\Documents\\Unlimited_Home_Works\\Internship2025\\data\\post_processing\\T1_65\\icp_output\\" #args['data_path']
 
 # List containing the electrodes, sorted according to the order used for ICP.
 ref_list = [
@@ -34,6 +35,13 @@ ref_list = [
     "P4", "CP4", "POz", "FC1", "FC2",
     "P1", "C1", "FCz", "CP1", "P2",
     "C2", "CP2", "Pz", "Cz", "CPz"
+]
+
+patchwork_fix = [
+    28, 29, 30, 31, 11, 54, 13, 52, 1, 53, 12, 2, 60, 55, 14, 56, 57, 15, 16,
+    46, 47, 24, 58, 39, 38, 59, 48, 25, 64, 26, 49, 9, 50, 10, 27, 3, 51, 63,
+    4, 40, 5, 41, 42, 7, 45, 33, 32, 17, 6, 8, 43, 42 ,62, 20, 21, 36, 34, 65,
+    22, 37, 35, 23, 19, 18, 61
 ]
 
 def read_file(path: str) -> list[list[float]]:
@@ -70,6 +78,12 @@ def sort(ref_list: list[str], data: list[list[str,float]]) -> list[list[str, flo
                 res.append(elec)
     return res
 
+def patchwork_sort(l):
+    res = []
+    for i in patchwork_fix:
+        res.append(l[i-1])
+    return res
+
 def write_file(li: list[list[str, float]], save_path: str) -> None:
     """
     Function used to write a .txt file with sorted electrodes.
@@ -89,17 +103,48 @@ def write_file(li: list[list[str, float]], save_path: str) -> None:
     
         with open(save_path, 'a') as fi:
             fi.write(res_str)
+            
+def write_file_2(li: list[list[float]], save_path: str) -> None:
+    """
+    Function used to write a .txt file with sorted electrodes.
+    
+    Keyword arguments:
+    
+    li -- sorted list containing electrode names and their positions
+    
+    save_path -- path to target repository
+    """
+    for line in li:
+        res = StringIO()
+        sys.stdout = res
+        # print(line[0]+","+float(line[1])+","+float(line[2])+","+float(line[3]))
+        print(f'{float(line[0])},{float(line[1])},{float(line[2])}')
+        res_str = res.getvalue()
+    
+        with open(save_path, 'a') as fi:
+            fi.write(res_str)
 
 def __main__():
-    corr = pd.read_csv(data_path + 'Correspondancies_ElectrodeDetection_Dataset.csv')
+    corr = pd.read_csv(path + 'Correspondancies_ElectrodeDetection_Dataset.csv')
     for index, row in corr.iterrows():
         if row['Set'] == "test":
             id = str(row['Id'])
             id = id.rjust(3,'0')
             
-            current_data = read_file(data_path + "trans/ID_" + id + ".txt")
+            current_data = read_file(path + "trans\\ID_" + id + ".txt")
             current_res = sort(ref_list, current_data)
-            write_file(current_res, data_path + "trans/after_sorting/ID_"+id+"_ sorted.txt")
+            write_file(current_res, path + "trans\\after_sorting\\ID_"+id+"_sorted.txt")
+    
+    # corr = pd.read_csv(path + 'Correspondancies_ElectrodeDetection_Dataset.csv')
+    # for index, row in corr.iterrows():
+    #     if row['Set'] == "test":
+    #         id = str(row['Id'])
+    #         id = id.rjust(3,'0')
+            
+    #         current_data = read_file(data_path + "Hemisfer_" + id + "_postprocessed_coord.txt")
+    #         print(len(patchwork_fix) == len(current_data))
+    #         current_res = patchwork_sort(current_data)
+    #         write_file_2(current_res, data_path + "\\after_sorting/ID_"+id+"_sorted.txt")
             
 __main__()
         
