@@ -33,8 +33,8 @@ suffix = ".nii.gz"
 # output_err = path_NAS + "post_processing\\T1_65\\brainstorm_err\\"#args['out_err_path']
 # output_data = path_NAS + "post_processing\\T1_65\\brainstorm_data\\"#args['out_dat_path']
 
-output_err = path_NAS + "post_processing\\T1_65\\pos_errors\\"#args['out_err_path']
-output_data = path_NAS + "post_processing\\T1_65\\final_data\\"#args['out_dat_path']
+output_err = path_NAS + "post_processing\\T1_65\\brainstorm_err\\"#args['out_err_path']
+output_data = path_NAS + "post_processing\\T1_65\\brainstorm_data\\"#args['out_dat_path']
 
 # output_err = path_NAS + "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/trans/after_validation/err/"
 # output_data = path_NAS + "/home/klemouel/NAS_EMPENN/share/users/klemouel/Stage/trans/after_validation/data/" 
@@ -55,10 +55,10 @@ for index, row in corr.iterrows():
         # Read the Ground Truth image and the Prediction image
         gTruth_image = sitk.ReadImage(path_NAS + "Results_GroundTruth" + "\\" + row['Folder'] + "\\" + row['Name'] + "\\" + row['Quality'] + "\\gt_seg.nii")
         # predict_image = sitk.ReadImage(path_NAS + "post_processing/T1_65/icp_output/Hemisfer_" + id + "_postprocessed.nii.gz")
-        # with open(path_NAS + "trans\\after_convert\\ID_"+id+"_converted.txt", 'r') as f:
-        #     data = f.read()
-        with open(path_NAS + "post_processing\\T1_65\\icp_output\\Hemisfer_"+id+"_postprocessed_coord.txt", 'r') as f:
+        with open(path_NAS + "trans\\after_convert\\ID_"+id+"_converted.txt", 'r') as f:
             data = f.read()
+        # with open(path_NAS + "post_processing\\T1_65\\icp_output\\Hemisfer_"+id+"_postprocessed_coord.txt", 'r') as f:
+        #     data = f.read()
     
         # Compute the connected components of both images
 
