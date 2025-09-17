@@ -3,6 +3,8 @@
 ## Purpose
 This repository contains the various scripts and functions used to support the segmentation of electrodes in MRI volumes in an EEG-fMRI context.
 
+Forked from initial repository found here: `https://gitlab.inria.fr/cpinte/deep-learning-based-localization-of-eeg-electrodes-within-mri-acquisitions`
+
 ## Languages
 - Python
 - Matlab
